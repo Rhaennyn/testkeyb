@@ -1,0 +1,133 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<style>
+.teclado td{
+	border:1px solid black;
+    width:25px; height:30px;
+    text-align:center;
+}
+</style>
+
+<h1>Keyboard Test</h1>
+<p>
+Correctas: <span id="correctas">0</span><br/>
+Incorrectas: <span id="incorrectas">0</span><br/>
+<br/>
+Tiempo: <span id="timer">120</span><br/>
+Puntaje: <span id="puntaje">0</span>
+</p>
+
+<textarea id="area" cols=20 rows=1 disabled="true" style="font-size:25px; font-family: Courier;"></textarea>
+<br/>
+<table class="teclado">
+	<tr>
+    	<td id="Q">Q</td>
+        <td id="W">W</td>
+        <td id="E">E</td>
+        <td id="R">R</td>
+    </tr>
+</table>
+<table class="teclado" style="margin-left:70px;">
+	<tr>
+    	<td id="D">D</td>
+        <td id="F">F</td>
+    </tr>
+</table>
+<button onclick="start();">Comenzar</button>
+<button onclick="alert('En pausa... presione para continuar...')">Pausar</button>
+<script>
+	$('#area').text('');
+		var teclas = ['Q','W','E','R','D','F'];
+		var nivel = 1;
+		var vel = 1000*nivel;
+    var correctas = 0;
+    var incorrectas = 0;
+		var lanzadas = 0;
+    var timer = 120;
+    var puntaje = 0;
+		var time1;
+		var time2;
+
+	document.onkeypress = function (e) {
+    	actual = $('#area').text();
+        var u = actual.substring(actual.length-1, actual.length);
+        var p = actual.substring(0, actual.length-1);
+
+    	if (u == String.fromCharCode(e.keyCode).toUpperCase()){
+        	$('#area').text(p);
+          correctas = correctas + 1;
+          $('#correctas').text(correctas);
+					puntaje = puntaje + 10;
+      }else{
+        	incorrectas = incorrectas + 1;
+          $('#incorrectas').text(incorrectas);
+					puntaje = puntaje - 50;
+      }
+			$('#puntaje').text(puntaje);
+	};
+
+    document.onkeydown = function (e) {
+    	var presionado = String.fromCharCode(e.keyCode).toUpperCase();
+        $('#'+presionado).css("font-weight", "bold");
+    }
+    document.onkeyup = function (e) {
+    	var presionado = String.fromCharCode(e.keyCode).toUpperCase();
+        $('#'+presionado).css("font-weight", "normal");
+    }
+
+    function start(){
+    		correctas = 0;
+    		incorrectas = 0;
+    		timer = 120;
+				puntaje = 0;
+				vel = 1000*nivel;
+        $('#correctas').text(0);
+        $('#incorrectas').text(0);
+        $('#timer').text(120);
+        $('#area').text('');
+				clearTimeout(time1);
+				clearTimeout(time2);
+        agregar();
+        reloj();
+    }
+
+    function reloj(){
+    	timer = timer - 1;
+        $('#timer').text(timer);
+        if (timer>0){
+        	time1 = setTimeout(reloj, 1000);
+        }
+    }
+
+	function agregar(espacio){
+    		actual = $('#area').text();
+				if (lanzadas <= 120){
+        	r = Math.floor((Math.random() * teclas.length));
+        	$('#area').text(teclas[r]+actual);
+					lanzadas = lanzadas + 1;
+				}else{
+					$('#area').text(' '+actual);
+				}
+				if (correctas == 120){
+					alert('Ganaste!');
+					clearTimeout(time1);
+					clearTimeout(time2);
+				}
+
+        l = actual.length + 1;
+
+        if (timer == 100) vel = 800*nivel;
+        if (timer == 80) vel = 725*nivel;
+        if (timer == 60) vel = 675*nivel;
+        if (timer == 40) vel = 550*nivel;
+
+        if (timer > 0){
+        	if (l <= 20){
+            	time2 = setTimeout(agregar, vel);
+            }else{
+            	alert('Game Over!');
+							clearTimeout(time1);
+							clearTimeout(time2);
+            }
+        }
+    }
+</script>
